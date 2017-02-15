@@ -20,6 +20,25 @@ def eulerEDO(f, t0, tF, y0, N):
 
     return (t,w)
 
+def eulerEDOs(f, t0, tF, y0, N):
+    h = (tF - t0)/N
+    t = np.linspace(t0, tF, N+1)
+
+    eSize = y0.size
+
+    s = (t.size, y0.size)
+
+    w = np.zeros(t.size);
+
+    for j in range(eSize):
+        w[0][j] = y0[j]
+
+    for i in range(0,t.size-1):
+        for j in range(eSize):
+            w[i+1][j] = w[i][j]+h*f(t[i],w[i][j])
+
+    return (t,w)
+
 def taylor2EDO(f, dfdt, t0, tF, y0, N) :
     h = (tF - t0)/N
     t = np.linspace(t0, tF, N+1)
@@ -116,15 +135,19 @@ def rk4taOrdemPlus(f, t0, tF, y0, N):
     h = (tF - t0)/N
     hh = 0.5*h
     t = np.linspace(t0, tF, N+1)
-    w = np.zeros(t.size);
+    tam = y0.size
+    w = []
 
-    w[0] = y0
-    for i in range(0,t.size-1):
-        k1 = h*f(t[i], w[i])
-        k2 = h*f(t[i]+hh, w[i]+0.5*k1)
-        k3 = h*f(t[i]+hh, w[i]+0.5*k2)
-        k4 = h*f(t[i+1], w[i]+k3)
-        w[i+1] = w[i] + (k1 + 2*k2 + 2*k3 + k4)/6.0
+    for j in range(tam):
+        w.append([])
+        w[j].append(float(y0[j]))
+        for i in range(0,t.size-1):
+            k1 = h*f(t[i], w[j][i], j)
+            k2 = h*f(t[i]+hh, w[j][i]+0.5*k1, j)
+            k3 = h*f(t[i]+hh, w[j][i]+0.5*k2, j)
+            k4 = h*f(t[i+1], w[j][i]+k3, j)
+            k = w[j][i] + (k1 + 2*k2 + 2*k3 + k4)/6.0
+            w[j].append(k)
 
     return (t,w)
 
